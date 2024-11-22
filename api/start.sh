@@ -1,5 +1,7 @@
 #!/bin/bash
 
+docker compose up -d
+
 . .venv/bin/activate
 
 pip install -r requirements.txt

@@ -14,19 +14,15 @@ CORS(app)
 
 from flask_pymongo import PyMongo
 
-# MongoDB Konfiguration
 app.config["MONGO_URI"] = os.getenv('MONGODB_URI')
 
 try:
-    # PyMongo-Instanz initialisieren
     mongo = PyMongo(app)
     db = mongo.cx.get_database()
-    print(f"Successfully connected to database: {db.name}")
 except Exception as e:
     print(f"MongoDB connection failed: {e}")
 
-secret_key = os.getenv('FLASK_SECRET_KEY', 'default_secret_key')
-app.secret_key = secret_key
+app.secret_key = os.getenv('FLASK_SECRET_KEY')
 
 # Register all blueprints
 register_blueprints(app)

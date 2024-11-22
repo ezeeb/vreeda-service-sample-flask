@@ -1,5 +1,7 @@
 # docker-compose.yml
 
+name: vreeda-service-sample-flask
+
 services:
   mongodb:
     image: mongo:latest
@@ -11,6 +13,17 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
       - mongodb_data:/data/db  # Persist data in a Docker volume
+  
+  token-refresh-task:
+    image: curlimages/curl:7.87.0
+    container_name: token-refresh-task
+    entrypoint: >
+      /bin/sh -c "
+      while true; do
+        sleep 60;
+        curl -k -X GET https://host.docker.internal:3000/api/jobs/refresh-tokens?key=your-secure-key;
+      done
+      "
 
 volumes:
   mongodb_data:
