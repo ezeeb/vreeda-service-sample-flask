@@ -1,2 +1,1 @@
-http://localhost:3000/api/auth/callback/azure-ad-b2c
-%27+provided+in+the+request+is+not+registered+for+the+client+id+%272eb2b626-b424-49b3-ad62-a005ee25b067%27.%0d%0aCorrelation+ID%3a+2b41ba3f-7079-4109-abea-16f36c99d888%0d%0aTimestamp%3a+2024-11-19+21%3a16%3a43Z%0d%0a&state=12345
+TODO
