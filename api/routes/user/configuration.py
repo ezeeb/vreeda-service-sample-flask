@@ -51,7 +51,7 @@ def update_user_configuration():
             {"user_id": user_id},
             {
                 "$set": {"configuration": configuration},
-                "$currentDate": {"updatedAt": True}
+                "$currentDate": {"updated_at": True}
             },
             upsert=True,
             return_document=True  # Gibt das aktualisierte Dokument zurück

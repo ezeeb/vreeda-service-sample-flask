@@ -22,17 +22,17 @@ def refresh_tokens():
         return jsonify({"success": False, "message": "Unauthorized"}), 401
 
     try:
-        print("Token refresh job triggered...")
-
         threshold = datetime.utcnow() + timedelta(minutes=5)
 
+        print(f"Token refresh job: checking for access token expiration before {threshold.isoformat()}")
+
         users_to_refresh = mongo.db.user_contexts.find({
-            "apiAccessTokens.accessTokenExpiration": {"$lt": threshold}
+            "api_access_tokens.access_token_expiration": {"$lt": threshold}
         })
 
         for user in users_to_refresh:
             try:
-                refresh_token = user.get("apiAccessTokens", {}).get("refreshToken")
+                refresh_token = user.get("api_access_tokens", {}).get("refresh_token")
                 if not refresh_token:
                     print(f"Skipping user {user['user_id']} due to missing refresh token.")
                     continue
@@ -59,12 +59,12 @@ def refresh_tokens():
                     {"_id": user["_id"]},
                     {
                         "$set": {
-                            "apiAccessTokens.accessToken": data["access_token"],
-                            "apiAccessTokens.refreshToken": data.get("refresh_token", refresh_token),
-                            "apiAccessTokens.accessTokenExpiration": datetime.utcnow() + timedelta(seconds=data["expires_in"]),
-                            "apiAccessTokens.refreshTokenExpiration": datetime.utcnow() + timedelta(seconds=data["refresh_token_expires_in"]),
+                            "api_access_tokens.access_token": data["access_token"],
+                            "api_access_tokens.refresh_token": data.get("refresh_token", refresh_token),
+                            "api_access_tokens.access_token_expiration": datetime.utcnow() + timedelta(seconds=data["expires_in"]),
+                            "api_access_tokens.refresh_token_expiration": datetime.utcnow() + timedelta(seconds=data["refresh_token_expires_in"]),
                         },
-                        "$currentDate": {"updatedAt": True}
+                        "$currentDate": {"updated_at": True}
                     }
                 )
 
