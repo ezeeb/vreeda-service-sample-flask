@@ -14,7 +14,7 @@ AZURE_AD_B2C_CLIENT_ID = os.getenv("AZURE_AD_B2C_CLIENT_ID")
 AZURE_AD_B2C_CLIENT_SECRET = os.getenv("AZURE_AD_B2C_CLIENT_SECRET")
 API_REFRESH_TOKENS_JOB_KEY = os.getenv("API_REFRESH_TOKENS_JOB_KEY")
 
-@blueprint.route('/api/refresh-tokens', methods=['GET'])
+@blueprint.route('/api/jobs/refresh-tokens', methods=['GET'])
 def refresh_tokens():
 
     api_key = request.args.get("key")
