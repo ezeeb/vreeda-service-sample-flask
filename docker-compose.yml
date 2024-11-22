@@ -1,0 +1,16 @@
+# docker-compose.yml
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - '27017:27017'  # Expose MongoDB on localhost:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongodb_data:/data/db  # Persist data in a Docker volume
+
+volumes:
+  mongodb_data:
