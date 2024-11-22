@@ -36,7 +36,7 @@ export default function DeviceList({selectedDevices, onSelectionChange}: {select
   };
 
   return (
-    <Box sx={{ width: '100%', mt: 4 }}>
+    <Box sx={{ width: '100%', pt: 4 }}>
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Typography variant="h5" gutterBottom>
           Devices
@@ -47,7 +47,7 @@ export default function DeviceList({selectedDevices, onSelectionChange}: {select
       </Box>
       {error && <Alert severity="error">Error: {error}</Alert>}
       {loading ? (
-        <Box display="flex" justifyContent="center" mt={2}>
+        <Box display="flex" justifyContent="center" pt={2}>
           <CircularProgress />
         </Box>
       ) : (
