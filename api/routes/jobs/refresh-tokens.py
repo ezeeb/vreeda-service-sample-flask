@@ -1,5 +1,4 @@
-from flask import Flask, jsonify, request, Blueprint
-from pymongo import MongoClient
+from flask import jsonify, request, Blueprint
 import os
 import requests
 from datetime import datetime, timedelta
@@ -72,7 +71,7 @@ def refresh_tokens():
             except Exception as e:
                 print(f"Error refreshing token for user {user['user_id']}: {e}")
 
-        print("Token refresh job completed successfully.")
+        print("Token refresh job: completed successfully.")
         return jsonify({"success": True, "message": "Token refresh completed successfully."})
     except Exception as e:
         print(f"Error in token refresh job: {e}")
