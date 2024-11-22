@@ -1,8 +1,9 @@
 import { DeviceRequestModel } from "@/types/vreedaApi";
-import { Box, Button, Card, CardContent, Link, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Card, CardContent, Link, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 
 export default function CustomPatternControl({selectedDevices}: {selectedDevices: string[]}) {
+    const [error, setError] = useState<string | null>(null);
     const [pattern, setPattern] = useState("type:football|f:3|x:9.3|r:0.1,0,1.0;0.1,1.0,0;0.1,0,1.0;0.7,1.0,0;0.2,0,0;0.1,0,1.0;0.1,1.0,0;0.1,0,1.0;0.2,1.0,0;0.3,0,0.0;0.1,0.0,0;0.2,0,0.0;0.4,0.0,0;0.1,0,1.0;0.1,1.0,0;0.1,0,1.0;0.2,1.0,0;0.3,0,1.0;0.1,1.0,0;0.2,0,1.0;0.4,1.0,0;0.1,0,1.0;0.1,1.0,0;0.1,0,1.0;0.7,1.0,0;0.3,0,1.0;0.1,1.0,0;0.2,0,1.0;0.4,1.0,0;0.2,0,1.0;0.9,1.0,0;2,0,0|g:0.1,0,0.0;0.1,0.0,0;0.1,0,0.0;0.7,0.0,0;0.2,0,0;0.1,0,0.0;0.1,0.0,0;0.1,0,0.0;0.2,0.0,0;0.3,0,1.0;0.1,1.0,0;0.2,0,1.0;0.4,1.0,0;0.1,0,0.0;0.1,0.0,0;0.1,0,0.0;0.2,0.0,0;0.3,0,0.0;0.1,0.0,0;0.2,0,0.0;0.4,0.0,0;0.1,0,0.0;0.1,0.0,0;0.1,0,0.0;0.7,0.0,0;0.3,0,0.0;0.1,0.0,0;0.2,0,0.0;0.4,0.0,0;0.2,0,0.0;0.9,0.0,0;2,0,0|b:0.1,0,0.0;0.1,0.0,0;0.1,0,0.0;0.7,0.0,0;0.2,0,0;0.1,0,0.0;0.1,0.0,0;0.1,0,0.0;0.2,0.0,0;0.3,0,0.0235;0.1,0.0235,0;0.2,0,0.0235;0.4,0.0235,0;0.1,0,0.0;0.1,0.0,0;0.1,0,0.0;0.2,0.0,0;0.3,0,0.0;0.1,0.0,0;0.2,0,0.0;0.4,0.0,0;0.1,0,0.0;0.1,0.0,0;0.1,0,0.0;0.7,0.0,0;0.3,0,0.0;0.1,0.0,0;0.2,0,0.0;0.4,0.0,0;0.2,0,0.0;0.9,0.0,0;2,0,0|c:0.1,0,0;0.1,0,0.15;0.3,0.15,0;0.5,0,0;0.2,0,0;0.2,0,0;0.1,0,0.15;0.2,0.15,0;0.4,0,0;0.1,0,0.15;0.2,0.15,0;0.3,0,0;0.2,0,0;0.1,0,0.15;0.2,0.15,0;0.4,0,0;0.1,0,0.15;0.2,0.15,0;0.3,0,0;0.1,0,0;0.1,0,0.15;0.3,0.15,0;0.5,0,0;0.4,0,0;0.1,0,0.15;0.2,0.15,0;0.3,0,0;1.1,0,0;2,0,0");
 
     const handleRunClicked = async () => {
@@ -13,28 +14,34 @@ export default function CustomPatternControl({selectedDevices}: {selectedDevices
                 program: 'custom',
             }
         };
-        selectedDevices.forEach(async (deviceId) => {
-            try {
-                const response = await fetch('/api/vreeda/patch-device', {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ deviceId, request }),
-                });
-            
-                if (!response.ok) {
-                    throw new Error('Failed to update device');
+        setError(null);
+        if (selectedDevices.length === 0) {
+            setError('no device selected');
+        } else {
+            selectedDevices.forEach(async (deviceId) => {
+                try {
+                    const response = await fetch('/api/vreeda/patch-device', {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ deviceId, request }),
+                    });
+                
+                    if (!response.ok) {
+                        throw new Error('Failed to update device');
+                    }
+                
+                    const data = await response.json();
+                    console.log('Device updated successfully:', data);
+                    return data;
+                } catch (error) {
+                    setError((error as Error).message);
+                    console.log('Error running pattern: ', error);
+                    throw error;
                 }
-            
-                const data = await response.json();
-                console.log('Device updated successfully:', data);
-                return data;
-            } catch (error) {
-                console.log('Error updating device:', error);
-                throw error;
-            }
-        });
+            });
+        }
     };
 
     return (
@@ -70,6 +77,7 @@ export default function CustomPatternControl({selectedDevices}: {selectedDevices
                         >
                             Run
                         </Button>
+                        {error && <Alert severity="error">Error: {error}</Alert>}
                     </Box>
                 </CardContent>
             </Card>
