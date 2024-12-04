@@ -21,7 +21,7 @@ def refresh_tokens():
         return jsonify({"success": False, "message": "Unauthorized"}), 401
 
     try:
-        threshold = datetime.utcnow() + timedelta(minutes=5)
+        threshold = datetime.utcnow() + timedelta(minutes=10)
 
         print(f"Token refresh job: checking for access token expiration before {threshold.isoformat()}")
 
@@ -54,24 +54,28 @@ def refresh_tokens():
 
                 data = response.json()
 
+                new_access_token_expiration = datetime.utcnow() + timedelta(seconds=data["expires_in"])
+                new_refresh_token_expiration = datetime.utcnow() + timedelta(seconds=data["refresh_token_expires_in"])
+
                 mongo.db.user_contexts.update_one(
                     {"_id": user["_id"]},
                     {
                         "$set": {
                             "api_access_tokens.access_token": data["access_token"],
                             "api_access_tokens.refresh_token": data.get("refresh_token", refresh_token),
-                            "api_access_tokens.access_token_expiration": datetime.utcnow() + timedelta(seconds=data["expires_in"]),
-                            "api_access_tokens.refresh_token_expiration": datetime.utcnow() + timedelta(seconds=data["refresh_token_expires_in"]),
+                            "api_access_tokens.access_token_expiration": new_access_token_expiration,
+                            "api_access_tokens.refresh_token_expiration": new_refresh_token_expiration,
                         },
                         "$currentDate": {"updated_at": True}
                     }
                 )
 
-                print(f"Successfully refreshed token for user {user['user_id']}")
+                print(f"- refreshed tokens for user {user['user_id']} @{datetime.utcnow()}")
+                print(f"\textended access token from {user.get("api_access_tokens", {}).get("access_token_expiration")} to {new_access_token_expiration}")
+                print(f"\textended refresh token from {user.get("api_access_tokens", {}).get("refresh_token_expiration")} to {new_refresh_token_expiration}")
             except Exception as e:
-                print(f"Error refreshing token for user {user['user_id']}: {e}")
+                print(f"Error refreshing tokens for user {user['user_id']}: {e}")
 
-        print("Token refresh job: completed successfully.")
         return jsonify({"success": True, "message": "Token refresh completed successfully."})
     except Exception as e:
         print(f"Error in token refresh job: {e}")

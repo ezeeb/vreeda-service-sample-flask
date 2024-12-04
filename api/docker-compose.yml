@@ -20,7 +20,7 @@ services:
     entrypoint: >
       /bin/sh -c "
       while true; do
-        sleep 60;
+        sleep 300;
         curl -k -X GET https://host.docker.internal:3000/api/jobs/refresh-tokens?key=your-secure-key;
       done
       "
